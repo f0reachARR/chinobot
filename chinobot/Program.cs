@@ -9,7 +9,7 @@ namespace chinobot
 {
     class Program
     {
-        private static readonly TelegramBotClient Bot = new TelegramBotClient("492320650:AAFcIMsiNSqhcAq_GIdK38RPju-rT-it6mU");
+        private static readonly TelegramBotClient Bot = new TelegramBotClient("API");
 
         static void Main(string[] args)
         {
