@@ -1,15 +1,16 @@
 ﻿using System;
 using Telegram.Bot;
 using Telegram.Bot.Args;
-using System.Drawing.Imaging;
 using System.Net;
-using System.IO;
+using Codeplex.Data;
+using System.Text;
 
 namespace chinobot
 {
     class Program
     {
-        private static readonly TelegramBotClient Bot = new TelegramBotClient("API");
+        private static readonly TelegramBotClient Bot = new TelegramBotClient("APIKEY");
+        const string NO_VALUE = "---";
 
         static void Main(string[] args)
         {
@@ -21,57 +22,113 @@ namespace chinobot
             Bot.StopReceiving();
         }
 
+
         private static void Bot_OnMessage(object sender, MessageEventArgs e)
         {
             if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.TextMessage)
             {
-                if (e.Message.Text == "おはよう")
+                Console.WriteLine(e.Message.Text);
+
+                if (e.Message.Text == "/hello")
                 {
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます" + e.Message.Chat.Username + "さん");
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日も天気がいいですね");
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "http://crypto.peijun.info/wp-content/uploads/2018/01/7ca47fac-s.jpg");
-
                 }
-                else if (e.Message.Text == "おやすみ")
+                else if (e.Message.Text == "/leave")
                 {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい" + e.Message.Chat.Username + "さん");
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "http://crypto.peijun.info/wp-content/uploads/2018/01/maxresdefault.jpg");
+                    Bot.LeaveChatAsync(e.Message.Chat.Id);
                 }
-                else if (e.Message.Text == "おみくじ")
+                else if (e.Message.Text == "/omikuji")
                 {
                     System.Random r = new System.Random();
                     int i1 = r.Next(10);
-                    //int i1 = 2; for debug
                     if (i1 == 1)
                     {
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おめでとうございます。大吉です。");
                     }
                     else if (i1 == 2)
                     {
-                        /* trying send photo
-                        string url = "URL";
-                        WebClient wc = new WebClient();
-                        Stream stream = wc.OpenRead(url);
-                        Bitmap bitmap = new Bitmap(stream);
-                        stream.Close();
-                        */
-
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "大凶です。元気出してお兄ちゃん。");
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "https://wp.me/a9uW6J-1C");
                     }
                     else
                     {
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "中吉です。");
                     }
                 }
+                else if (e.Message.Text == "/wether")
+                {
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, GetWeatherText());
+                }
+                else if (e.Message.Text == "/help")
+                {
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id,"現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
+                }
                 else
                 {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "ごめんなさい、よくわからないです。");
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "http://crypto.peijun.info/wp-content/uploads/2018/01/CezUMjHWwAAUtLq.jpg");
+                    
                 }
             }
-
+            
         }
 
-       }
+        private static string GetWeatherText()
+        {
+            var url = "http://weather.livedoor.com/forecast/webservice/json/v1?city=130010";
+            var req = WebRequest.Create(url);
+
+            using (var res = req.GetResponse())
+            using (var s = res.GetResponseStream())
+            {
+                dynamic json = DynamicJson.Parse(s);
+
+                //天気(今日)
+                dynamic today = json.forecasts[0];
+
+                string dateLabel = today.dateLabel;
+                string date = today.date;
+                string telop = today.telop;
+
+                var sbTempMax = new StringBuilder();
+                dynamic todayTemperatureMax = today.temperature.max;
+                if (todayTemperatureMax != null)
+                {
+                    sbTempMax.AppendFormat("{0}℃", todayTemperatureMax.celsius);
+                }
+                else
+                {
+                    sbTempMax.Append(NO_VALUE);
+                }
+
+                var sbTempMin = new StringBuilder();
+                dynamic todayTemperatureMin = today.temperature.min;
+                if (todayTemperatureMin != null)
+                {
+                    sbTempMin.AppendFormat("{0}℃", todayTemperatureMin.celsius);
+                }
+                else
+                {
+                    sbTempMin.Append(NO_VALUE);
+                }
+
+                //天気概況文
+                var situation = json.description.text;
+
+                //Copyright
+                var link = json.copyright.link;
+                var title = json.copyright.title;
+
+                return string.Format("{0}\n天気 {1}\n最高気温 {2}\n最低気温 {3}\n\n{4}\n\n{5}\n{6}",
+                    date,
+                    telop,
+                    sbTempMax.ToString(),
+                    sbTempMin.ToString(),
+                    situation,
+                    link,
+                    title
+                    );
+
+            }
+        }
+
+    }
 }
