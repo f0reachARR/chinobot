@@ -29,47 +29,61 @@ namespace chinobot
             {
                 Console.WriteLine(e.Message.Text);
 
-                if (e.Message.Text == "/hello")
+                switch (e.Message.Text)
                 {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます" + e.Message.Chat.Username + "さん");
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日も天気がいいですね");
+
+                    case "/hello":
+
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます" + e.Message.NewChatMember + "さん");
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日も天気がいいですね");
+                        break;
+
+                    case "/omikuji":
+
+                        System.Random r = new System.Random();
+                        int i1 = r.Next(10);
+                        if (i1 == 1)
+                        {
+                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "おめでとうございます。大吉です。");
+                        }
+                        else if (i1 == 2)
+                        {
+                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "大凶です。元気出してお兄ちゃん。");
+                        }
+                        else
+                        {
+                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "中吉です。");
+                        }
+                        break;
+
+                    case "/leave":
+
+                        Bot.LeaveChatAsync(e.Message.Chat.Id);
+                        break;
+
+                    case "/wether":
+
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, GetWeatherText());
+                        break;
+
+                    case "/help":
+
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
+                        break;
+
+                    default:
+                        break;
+
                 }
-                else if (e.Message.Text == "/leave")
-                {
-                    Bot.LeaveChatAsync(e.Message.Chat.Id);
-                }
-                else if (e.Message.Text == "/omikuji")
-                {
-                    System.Random r = new System.Random();
-                    int i1 = r.Next(10);
-                    if (i1 == 1)
-                    {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おめでとうございます。大吉です。");
-                    }
-                    else if (i1 == 2)
-                    {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "大凶です。元気出してお兄ちゃん。");
-                    }
-                    else
-                    {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "中吉です。");
-                    }
-                }
-                else if (e.Message.Text == "/wether")
-                {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, GetWeatherText());
-                }
-                else if (e.Message.Text == "/help")
-                {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id,"現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
-                }
-                else
-                {
-                    
-                }
+
             }
+
             
+            
+
+                        
         }
+
 
         private static string GetWeatherText()
         {
