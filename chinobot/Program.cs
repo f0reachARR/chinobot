@@ -74,6 +74,33 @@ namespace chinobot
                     default:
                         break;
 
+                    
+                }
+
+                if (0 <= e.Message.Text.IndexOf("/twitter"))
+                {
+                    try
+                    {
+                        string twiurl = "https://twitter.com/" + e.Message.Text.Remove(0, 9);
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, twiurl);
+                    }
+                    catch
+                    {
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
+                    }
+
+                }
+                else if (0 <= e.Message.Text.IndexOf("/twiarchive"))
+                {
+                    try
+                    {
+                        string archiveurl = "https://web.archive.org/save/https://twitter.com/" + e.Message.Text.Remove(0, 12) + "/";
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, archiveurl);
+                    }
+                    catch
+                    {
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
+                    }
                 }
 
             }
