@@ -110,7 +110,7 @@ namespace chinobot
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
                         break;
                     case "/chatstart":
-                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinobot\bin\Debug\chinobot.exe");
+                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\gotiusatalk\bin\Debug\gotiusatalk.exe");
                         System.Threading.Thread.Sleep(10);
                         Environment.Exit(100);
                         break;
