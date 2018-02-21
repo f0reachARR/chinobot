@@ -4,6 +4,9 @@ using Telegram.Bot.Args;
 using System.Net;
 using Codeplex.Data;
 using System.Text;
+using System.Collections.Generic;
+using NMeCab;
+using System.Diagnostics;
 
 namespace chinobot
 {
@@ -71,10 +74,51 @@ namespace chinobot
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
                         break;
 
+                    case "/test":
+
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, phrasetext());
+                        break;
+
+                    case "/starttest":
+
+                        chinotest(e);
+                        break;
+
+                    case "おはよう":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
+                        break;
+                    case "おはようチノちゃん":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
+                        System.Threading.Thread.Sleep(10);
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "あまり名前で呼ばないでください...");
+                        System.Threading.Thread.Sleep(10);
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "恥ずかしいです...//");
+                        break;
+                    case "チノちゃん":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "はい。なんでしょう");
+                        break;
+                    case "お兄ちゃんってよんで！":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "嫌です");
+                        break;
+                    case "おやすみ":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい");
+                        break;
+                    case "おやすみチノちゃん":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい。明日も早いですよ");
+                        break;
+                    case "もう寝るね":
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
+                        break;
+                    case "/chatstart":
+                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinobot\bin\Debug\chinobot.exe");
+                        System.Threading.Thread.Sleep(10);
+                        Environment.Exit(100);
+                        break;
+
                     default:
                         break;
 
-                    
+
                 }
 
                 if (0 <= e.Message.Text.IndexOf("/twitter"))
@@ -102,13 +146,36 @@ namespace chinobot
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
                     }
                 }
+                else if (0 <= e.Message.Text.IndexOf("/ma"))
+                {
+                    try
+                    {
+                        string matext = e.Message.Text.Remove(0, 4);
+                        var tagger = MeCabTagger.Create();
+
+                        string result = tagger.Parse(matext);
+
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, result);
+                    }
+                    catch
+                    {
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "エラーです。");
+                    }
+                }
 
             }
+            else if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.StickerMessage)
+            {
+                if (e.Message.Sticker.FileId == "CAADBQADCgAD4impGGXQnVlzLgGkAg")
+                {
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a");
+                }
+            }
 
-            
-            
 
-                        
+
+
+
         }
 
 
@@ -171,5 +238,54 @@ namespace chinobot
             }
         }
 
+        private static void chino(MessageEventArgs e)
+        {
+            
+
+        }
+
+        private static void chinotest(MessageEventArgs e)
+        {
+            while (true) {
+
+                if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.TextMessage)
+                {
+                    Console.WriteLine(e.Message.Text);
+
+                    switch (e.Message.Text)
+                    {
+                        
+                        case "/stop":
+                            break;
+
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private static string phrasetext()
+        {
+            using (System.IO.StreamReader file = new System.IO.StreamReader(@"D:chino.txt", System.Text.Encoding.UTF8))
+            {
+                string line = "";
+                List<string> list = new List<string>();         //空のListを作成する
+
+                // test.txtを1行ずつ読み込んでいき、末端(何もない行)までwhile文で繰り返す
+                while ((line = file.ReadLine()) != null)
+                {
+                    list.Add(line);
+                }
+
+                System.Random l = new System.Random();
+                int l1 = l.Next(10);
+
+                string a = list[l1];
+                return a;
+            }
+        }
     }
 }
