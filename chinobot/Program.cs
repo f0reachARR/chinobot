@@ -71,7 +71,7 @@ namespace chinobot
 
                     case "/help":
 
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\n/twitter/nです");
                         break;
 
                     case "おはよう":
@@ -100,7 +100,7 @@ namespace chinobot
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
                         break;
                     case "/chatstart":
-                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\gotiusatalk\gotiusatalk\bin\Debug\gotiusatalk.exe");
+                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinotalk\bin\Debug\chinotalk.exe");
                         System.Threading.Thread.Sleep(10);
                         Environment.Exit(100);
                         break;
