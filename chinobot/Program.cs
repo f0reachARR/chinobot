@@ -74,16 +74,6 @@ namespace chinobot
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
                         break;
 
-                    case "/test":
-
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, phrasetext());
-                        break;
-
-                    case "/starttest":
-
-                        chinotest(e);
-                        break;
-
                     case "おはよう":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
                         break;
@@ -114,6 +104,12 @@ namespace chinobot
                         System.Threading.Thread.Sleep(10);
                         Environment.Exit(100);
                         break;
+                    case "/an":
+                        var sentence = chinosentence.chino.matext();
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, sentence);
+                        chinosentence.chino.test();
+                        break;
+
 
                     default:
                         break;
