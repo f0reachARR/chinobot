@@ -25,14 +25,19 @@ namespace gotiusatalk
         {
             if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.TextMessage)
             {
-                if (e.Message.Text == "/stop")
-                {
+                Console.WriteLine(e.Message.Text);
+
+                switch (e.Message.Text) {
+
+                    case "/stop":
+
                     Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinobot\bin\Debug\chinobot.exe");
                     System.Threading.Thread.Sleep(10);
                     Environment.Exit(100);
-                }
-                else
-                {
+                        break;
+                    
+                    default:
+  
                     Console.WriteLine(e.Message.Text);
 
                     var url = " https://chatbot-api.userlocal.jp/api/chat?message=" + e.Message.Text + "&key=0556302ad5d7df3280bb";
@@ -45,7 +50,8 @@ namespace gotiusatalk
                     var sendtext = json.result;
 
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, sendtext);
-                }
+                        break;
+            }
             }
         }
     }
