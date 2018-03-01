@@ -4,7 +4,6 @@ using Telegram.Bot.Args;
 using System.Web;
 using System.Net;
 using Codeplex.Data;
-
 using System.Diagnostics;
 
 namespace gotiusatalk
