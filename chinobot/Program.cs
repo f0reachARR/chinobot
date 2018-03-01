@@ -7,6 +7,7 @@ using System.Text;
 using System.Collections.Generic;
 using NMeCab;
 using System.Diagnostics;
+using Telegram.Bot.Types;
 
 namespace chinobot
 {
@@ -61,6 +62,7 @@ namespace chinobot
 
                     case "/leave":
 
+                        
                         Bot.LeaveChatAsync(e.Message.Chat.Id);
                         break;
 
@@ -71,22 +73,18 @@ namespace chinobot
 
                     case "/help":
 
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\nです");
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
                         break;
-
-                    case "/test":
-
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, phrasetext());
-                        break;
-
-                    case "/starttest":
-
-                        chinotest(e);
-                        break;
+                    
+                    case "/help@chino_talk_bot":
+                         
+                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
+                         break;
 
                     case "おはよう":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
                         break;
+
                     case "おはようチノちゃん":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
                         System.Threading.Thread.Sleep(10);
@@ -94,26 +92,39 @@ namespace chinobot
                         System.Threading.Thread.Sleep(10);
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "恥ずかしいです...//");
                         break;
+
                     case "チノちゃん":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "はい。なんでしょう");
                         break;
+
                     case "お兄ちゃんってよんで！":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "嫌です");
                         break;
+
                     case "おやすみ":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい");
                         break;
+
                     case "おやすみチノちゃん":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい。明日も早いですよ");
                         break;
+
                     case "もう寝るね":
                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
                         break;
+
                     case "/chatstart":
-                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\gotiusatalk\gotiusatalk\bin\Debug\gotiusatalk.exe");
+                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinotalk\bin\Debug\chinotalk.exe");
                         System.Threading.Thread.Sleep(10);
                         Environment.Exit(100);
                         break;
+
+                    case "/an":
+                        var sentence = chinosentence.chino.matext();
+                        Bot.SendTextMessageAsync(e.Message.Chat.Id, sentence);
+                        chinosentence.chino.test();
+                        break;
+
 
                     default:
                         break;
@@ -121,20 +132,8 @@ namespace chinobot
 
                 }
 
-                if (0 <= e.Message.Text.IndexOf("/twitter"))
-                {
-                    try
-                    {
-                        string twiurl = "https://twitter.com/" + e.Message.Text.Remove(0, 9);
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, twiurl);
-                    }
-                    catch
-                    {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
-                    }
-
-                }
-                else if (0 <= e.Message.Text.IndexOf("/twiarchive"))
+                
+                if (0 <= e.Message.Text.IndexOf("/twiarchive"))
                 {
                     try
                     {
@@ -166,10 +165,78 @@ namespace chinobot
             }
             else if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.StickerMessage)
             {
+                
                 if (e.Message.Sticker.FileId == "CAADBQADCgAD4impGGXQnVlzLgGkAg")
                 {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, "https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a");
+                    //むー
+                    FileToSend audio1 =  new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a");
+                    string caption1 = "むー";
+                    Bot.SendAudioAsync(e.Message.Chat.Id, audio1 , caption1, 1 ,caption1 ,caption1);
                 }
+                else if(e.Message.Sticker.FileId == "CAADBQADAwAD4impGBRKcXYNv6a9Ag")
+                {
+                    //素人が扱えるものじゃない
+                    FileToSend audio2 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/product/5033/IOS/main_sound.m4a");
+                    string caption2 = "素人が扱えるものじゃない";
+                    Bot.SendAudioAsync(e.Message.Chat.Id, audio2 ,caption2 , 2 ,caption2 ,caption2); 
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQADDgAD4impGODqgxESU1YDAg")
+                {
+                    //ありがとうございます
+                    FileToSend audio3 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115478/IOS/sticker_sound.m4a");
+                    string caption3 = "ありがとうございます";
+                    Bot.SendAudioAsync(e.Message.Chat.Id, audio3 ,caption3 ,3 ,caption3, caption3);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQADDQAD4impGPskcUw4H7xmAg")
+                {
+                    //話がころころ変わっていく
+                    FileToSend audio4 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115482/IOS/sticker_sound.m4a");
+                    string caption4 = "話がころころ変わっていく";
+                    Bot.SendAudioAsync(e.Message.Chat.Id, audio4, caption4, 4, caption4, caption4);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQADCwAD4impGAIxus96VFmvAg")
+                {
+                    //今日のところはこれくらいにしといてあげます。
+                    FileToSend audio5 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115480/IOS/sticker_sound.m4a");
+                    string caption5 = "今日のところはこれくらいにしといてあげます";
+                    Bot.SendAudioAsync(e.Message.Chat.Id, audio5, caption5, 5, caption5, caption5);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQADDAAD4impGD1jq6rFPZG-Ag") 
+                {
+                    //なぜですか
+                    FileToSend audio6 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115481/IOS/sticker_sound.m4a");
+                    string caption6 = "なぜですか";
+                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio6, caption6);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQADCAAD4impGBqovJ00o17tAg")
+                {
+                    //おちついて
+                    FileToSend audio7 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115477/IOS/sticker_sound.m4a");
+                    string caption7 = "おちついて";
+                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio7, caption7);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQAD4QoAAsGPESCAZmHn5KsAAVEC")
+                {
+                    //とっても疲れました
+                    FileToSend audio8 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889677/IOS/sticker_sound.m4a");
+                    string caption8 = "とっても疲れました";
+                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio8, caption8);
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQAD4woAAsGPESA8OtWcGOdoPQI")
+                {
+                    //いいからさっさとしてください
+                    FileToSend audio9 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889679/IOS/sticker_sound.m4a");
+                    string caption9 = "いいからさっさとしてください！";
+                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio9, caption9); 
+                }
+                else if(e.Message.Sticker.FileId == "CAADBQAD8goAAsGPESD56VWnct6gPAI")
+                {
+                    //はずかしいです
+                    FileToSend audio10 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889694/IOS/sticker_sound.m4a");
+                    string caption10 = "恥ずかしいです..//";
+                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio10, caption10); 
+                }
+                
             }
 
 
@@ -238,34 +305,6 @@ namespace chinobot
             }
         }
 
-        private static void chino(MessageEventArgs e)
-        {
-            
-
-        }
-
-        private static void chinotest(MessageEventArgs e)
-        {
-            while (true) {
-
-                if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.TextMessage)
-                {
-                    Console.WriteLine(e.Message.Text);
-
-                    switch (e.Message.Text)
-                    {
-                        
-                        case "/stop":
-                            break;
-
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
 
         private static string phrasetext()
         {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chinobot", "chinobot\chinob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chinotalk", "chinotalk\chinotalk.csproj", "{81402ADA-7AAF-4F08-B1DA-889A6319C281}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chinosentence", "chinosentence\chinosentence.csproj", "{BAB6EC32-177B-4C36-B60D-A07BBF4553EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{81402ADA-7AAF-4F08-B1DA-889A6319C281}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81402ADA-7AAF-4F08-B1DA-889A6319C281}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81402ADA-7AAF-4F08-B1DA-889A6319C281}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAB6EC32-177B-4C36-B60D-A07BBF4553EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB6EC32-177B-4C36-B60D-A07BBF4553EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB6EC32-177B-4C36-B60D-A07BBF4553EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB6EC32-177B-4C36-B60D-A07BBF4553EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

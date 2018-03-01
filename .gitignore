@@ -119,6 +119,8 @@ nCrunchTemp_*
 *.mm.*
 AutoTest.Net/
 
+.vscode/
+
 # Web workbench (sass)
 .sass-cache/
 
