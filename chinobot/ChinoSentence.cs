@@ -8,15 +8,6 @@ using saezuri.NLP;
 
 namespace chinosentence
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            
-        }
-
-        
-    }
     public class chino
     {
         public static string matext()
@@ -29,7 +20,7 @@ namespace chinosentence
                 sentence.ConvertTo(mecab.ResultText);
 
                 return mecab.ResultText;
-                
+
             }
             else
                 return "エラー：" + mecab.Error;

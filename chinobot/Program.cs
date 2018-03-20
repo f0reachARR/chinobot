@@ -8,16 +8,39 @@ using System.Collections.Generic;
 using NMeCab;
 using System.Diagnostics;
 using Telegram.Bot.Types;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace chinobot
 {
     class Program
     {
-        private static readonly TelegramBotClient Bot = new TelegramBotClient("APIKEY");
+        private static TelegramBotClient Bot = null;
         const string NO_VALUE = "---";
+        struct StampAction
+        {
+            public string Text;
+            public string Voice;
+        }
+        private static Regex TwitterRegex = new Regex("^https://twitter\\.com/(\\S+)");
+        private static Dictionary<string, StampAction> Stamp = new Dictionary<string, StampAction>()
+        {
+            {"CAADBQADCgAD4impGGXQnVlzLgGkAg", new StampAction{Text="むー", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a" } },
+            {"CAADBQADAwAD4impGBRKcXYNv6a9Ag", new StampAction{Text="素人が扱えるものじゃない",Voice="https://stickershop.line-scdn.net/stickershop/v1/product/5033/IOS/main_sound.m4a"} },
+            {"CAADBQADDgAD4impGODqgxESU1YDAg", new StampAction{Text="ありがとうございます", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115478/IOS/sticker_sound.m4a"} },
+            {"CAADBQADDQAD4impGPskcUw4H7xmAg", new StampAction{Text="話がころころ変わっていく",Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115482/IOS/sticker_sound.m4a"} },
+            {"CAADBQADCwAD4impGAIxus96VFmvAg", new StampAction{Text="今日のところはこれくらいにしといてあげます",Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115480/IOS/sticker_sound.m4a"} },
+            {"CAADBQADDAAD4impGD1jq6rFPZG-Ag", new StampAction{Text="なぜですか", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115481/IOS/sticker_sound.m4a"} },
+            {"CAADBQADCAAD4impGBqovJ00o17tAg", new StampAction{Text="おちついて", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115477/IOS/sticker_sound.m4a"} },
+            {"CAADBQAD4QoAAsGPESCAZmHn5KsAAVEC", new StampAction{Text="とっても疲れました", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/30889677/IOS/sticker_sound.m4a"} },
+            {"CAADBQAD4woAAsGPESA8OtWcGOdoPQI", new StampAction{Text="いいからさっさとしてください！", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/30889679/IOS/sticker_sound.m4a" } },
+            {"CAADBQAD8goAAsGPESD56VWnct6gPAI", new StampAction{Text="恥ずかしいです..//", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/30889694/IOS/sticker_sound.m4a"} }
+        };
+        private static bool IsChatMode = false;
 
         static void Main(string[] args)
         {
+            Bot = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGLAM_TOKEN"));
             Bot.OnMessage += Bot_OnMessage;
             Bot.OnMessageEdited += Bot_OnMessage;
 
@@ -26,126 +49,132 @@ namespace chinobot
             Bot.StopReceiving();
         }
 
+        private static string ChinoTalk(string message)
+        {
+            var ApiKey = Environment.GetEnvironmentVariable("USERLOCAL_API");
+            var url = $"https://chatbot-api.userlocal.jp/api/chat?message={HttpUtility.UrlEncode(message)}&key={ApiKey}";
+            var req = WebRequest.Create(url);
+            var res = req.GetResponse();
+            var s = res.GetResponseStream();
+            dynamic json = DynamicJson.Parse(s);
+            return json.result;
+        }
 
-        private static void Bot_OnMessage(object sender, MessageEventArgs e)
+        private static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
             if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.TextMessage)
             {
                 Console.WriteLine(e.Message.Text);
-
+                if (IsChatMode)
+                {
+                    if (e.Message.Text.StartsWith("/stop"))
+                    {
+                        IsChatMode = false;
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい");
+                        return;
+                    }
+                    try
+                    {
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, ChinoTalk(e.Message.Text));
+                    }
+                    catch
+                    {
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "何かおかしいです・・");
+                    }
+                    return;
+                }
                 switch (e.Message.Text)
                 {
-
                     case "/hello":
-
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます" + e.Message.NewChatMember + "さん");
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日も天気がいいですね");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, $"おはようございます {e.Message.From.FirstName} {e.Message.From.LastName} さん");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日も天気がいいですね");
                         break;
-
                     case "/omikuji":
-
-                        System.Random r = new System.Random();
+                        var r = new Random();
                         int i1 = r.Next(10);
+                        string Text = "中吉です。";
                         if (i1 == 1)
                         {
-                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "おめでとうございます。大吉です。");
+                            Text = "おめでとうございます。大吉です。";
                         }
                         else if (i1 == 2)
                         {
-                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "大凶です。元気出してお兄ちゃん。");
+                            Text = "大凶です。元気出してお兄ちゃん。";
                         }
-                        else
-                        {
-                            Bot.SendTextMessageAsync(e.Message.Chat.Id, "中吉です。");
-                        }
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, Text);
                         break;
-
                     case "/leave":
-
-                        
-                        Bot.LeaveChatAsync(e.Message.Chat.Id);
+                        await Bot.LeaveChatAsync(e.Message.Chat.Id);
                         break;
 
-                    case "/wether":
-
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, GetWeatherText());
+                    case "/weather":
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, GetWeatherText());
                         break;
 
                     case "/help":
-
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
                         break;
-                    
+
                     case "/help@chino_talk_bot":
-                         
-                         Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
-                         break;
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "現在使用できるコマンドは\n/hello\n/leave\n/omikuji\n/wether\n/help\n/chatstart\n/an\n/ma\nです");
+                        break;
 
                     case "おはよう":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
                         break;
 
                     case "おはようチノちゃん":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
-                        System.Threading.Thread.Sleep(10);
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "あまり名前で呼ばないでください...");
-                        System.Threading.Thread.Sleep(10);
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "恥ずかしいです...//");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "おはようございます");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "あまり名前で呼ばないでください...");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "恥ずかしいです...//");
                         break;
 
                     case "チノちゃん":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "はい。なんでしょう");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "はい。なんでしょう");
                         break;
 
                     case "お兄ちゃんってよんで！":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "嫌です");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "嫌です");
                         break;
 
                     case "おやすみ":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい");
                         break;
 
                     case "おやすみチノちゃん":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい。明日も早いですよ");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "おやすみなさい。明日も早いですよ");
                         break;
 
                     case "もう寝るね":
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "今日はまだ...お話していたい...気分です...");
                         break;
 
                     case "/chatstart":
-                        Process.Start(@"C:\Users\jun07\Documents\Visual Studio 2017\Projects\chinobot\chinotalk\bin\Debug\chinotalk.exe");
-                        System.Threading.Thread.Sleep(10);
-                        Environment.Exit(100);
+                        IsChatMode = true;
                         break;
 
                     case "/an":
                         var sentence = chinosentence.chino.matext();
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, sentence);
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, sentence);
                         chinosentence.chino.test();
                         break;
-
-
-                    default:
-                        break;
-
-
                 }
 
-                
-                if (0 <= e.Message.Text.IndexOf("/twiarchive"))
+
+                if (e.Message.Text.StartsWith("/twiarchive"))
                 {
-                    try
+                    var Match = TwitterRegex.Match(e.Message.Text);
+                    if (Match != null)
                     {
-                        string archiveurl = "https://web.archive.org/save/https://twitter.com/" + e.Message.Text.Remove(0, 12) + "/";
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, archiveurl);
+                        var archiveurl = "https://web.archive.org/save/https://twitter.com/" + Match.Groups[1].Value;
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, archiveurl);
                     }
-                    catch
+                    else
                     {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "正しく入力してください");
                     }
                 }
-                else if (0 <= e.Message.Text.IndexOf("/ma"))
+                if (e.Message.Text.StartsWith("/ma"))
                 {
                     try
                     {
@@ -154,95 +183,22 @@ namespace chinobot
 
                         string result = tagger.Parse(matext);
 
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, result);
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, result);
                     }
                     catch
                     {
-                        Bot.SendTextMessageAsync(e.Message.Chat.Id, "エラーです。");
+                        await Bot.SendTextMessageAsync(e.Message.Chat.Id, "エラーです。");
                     }
                 }
-
             }
             else if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.StickerMessage)
             {
-                
-                if (e.Message.Sticker.FileId == "CAADBQADCgAD4impGGXQnVlzLgGkAg")
+                if (Stamp.ContainsKey(e.Message.Sticker.FileId))
                 {
-                    //むー
-                    FileToSend audio1 =  new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a");
-                    string caption1 = "むー";
-                    Bot.SendAudioAsync(e.Message.Chat.Id, audio1 , caption1, 1 ,caption1 ,caption1);
+                    var Action = Stamp[e.Message.Sticker.FileId];
+                    await Bot.SendVoiceAsync(e.Message.Chat.Id, new FileToSend(new Uri(Action.Voice)), Action.Text);
                 }
-                else if(e.Message.Sticker.FileId == "CAADBQADAwAD4impGBRKcXYNv6a9Ag")
-                {
-                    //素人が扱えるものじゃない
-                    FileToSend audio2 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/product/5033/IOS/main_sound.m4a");
-                    string caption2 = "素人が扱えるものじゃない";
-                    Bot.SendAudioAsync(e.Message.Chat.Id, audio2 ,caption2 , 2 ,caption2 ,caption2); 
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQADDgAD4impGODqgxESU1YDAg")
-                {
-                    //ありがとうございます
-                    FileToSend audio3 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115478/IOS/sticker_sound.m4a");
-                    string caption3 = "ありがとうございます";
-                    Bot.SendAudioAsync(e.Message.Chat.Id, audio3 ,caption3 ,3 ,caption3, caption3);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQADDQAD4impGPskcUw4H7xmAg")
-                {
-                    //話がころころ変わっていく
-                    FileToSend audio4 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115482/IOS/sticker_sound.m4a");
-                    string caption4 = "話がころころ変わっていく";
-                    Bot.SendAudioAsync(e.Message.Chat.Id, audio4, caption4, 4, caption4, caption4);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQADCwAD4impGAIxus96VFmvAg")
-                {
-                    //今日のところはこれくらいにしといてあげます。
-                    FileToSend audio5 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115480/IOS/sticker_sound.m4a");
-                    string caption5 = "今日のところはこれくらいにしといてあげます";
-                    Bot.SendAudioAsync(e.Message.Chat.Id, audio5, caption5, 5, caption5, caption5);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQADDAAD4impGD1jq6rFPZG-Ag") 
-                {
-                    //なぜですか
-                    FileToSend audio6 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115481/IOS/sticker_sound.m4a");
-                    string caption6 = "なぜですか";
-                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio6, caption6);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQADCAAD4impGBqovJ00o17tAg")
-                {
-                    //おちついて
-                    FileToSend audio7 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/7115477/IOS/sticker_sound.m4a");
-                    string caption7 = "おちついて";
-                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio7, caption7);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQAD4QoAAsGPESCAZmHn5KsAAVEC")
-                {
-                    //とっても疲れました
-                    FileToSend audio8 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889677/IOS/sticker_sound.m4a");
-                    string caption8 = "とっても疲れました";
-                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio8, caption8);
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQAD4woAAsGPESA8OtWcGOdoPQI")
-                {
-                    //いいからさっさとしてください
-                    FileToSend audio9 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889679/IOS/sticker_sound.m4a");
-                    string caption9 = "いいからさっさとしてください！";
-                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio9, caption9); 
-                }
-                else if(e.Message.Sticker.FileId == "CAADBQAD8goAAsGPESD56VWnct6gPAI")
-                {
-                    //はずかしいです
-                    FileToSend audio10 = new FileToSend("https://stickershop.line-scdn.net/stickershop/v1/sticker/30889694/IOS/sticker_sound.m4a");
-                    string caption10 = "恥ずかしいです..//";
-                    Bot.SendVoiceAsync(e.Message.Chat.Id, audio10, caption10); 
-                }
-                
             }
-
-
-
-
-
         }
 
 
@@ -295,8 +251,8 @@ namespace chinobot
                 return string.Format("{0}\n天気 {1}\n最高気温 {2}\n最低気温 {3}\n\n{4}\n\n{5}\n{6}",
                     date,
                     telop,
-                    sbTempMax.ToString(),
-                    sbTempMin.ToString(),
+                    sbTempMax,
+                    sbTempMin,
                     situation,
                     link,
                     title
@@ -305,7 +261,7 @@ namespace chinobot
             }
         }
 
-
+        /*
         private static string phrasetext()
         {
             using (System.IO.StreamReader file = new System.IO.StreamReader(@"D:chino.txt", System.Text.Encoding.UTF8))
@@ -325,6 +281,6 @@ namespace chinobot
                 string a = list[l1];
                 return a;
             }
-        }
+        }*/
     }
 }
