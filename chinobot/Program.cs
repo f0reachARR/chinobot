@@ -22,7 +22,7 @@ namespace chinobot
             public string Text;
             public string Voice;
         }
-        private static Regex TwitterRegex = new Regex("^https://twitter\\.com/(\\S+)");
+        private static Regex TwitterRegex = new Regex("https://twitter\\.com/(\\S+)");
         private static Dictionary<string, StampAction> Stamp = new Dictionary<string, StampAction>()
         {
             {"CAADBQADCgAD4impGGXQnVlzLgGkAg", new StampAction{Text="むー", Voice="https://stickershop.line-scdn.net/stickershop/v1/sticker/7115479/IOS/sticker_sound.m4a" } },
